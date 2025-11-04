@@ -1,4 +1,4 @@
-@extends('layout')
+@extends('layout.app')
 
 @section('content')
 <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">

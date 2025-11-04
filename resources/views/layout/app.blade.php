@@ -78,8 +78,7 @@
             </div>
         @endif
 
-        @yield('content')
     </div>
-
+        @yield('content')
 </body>
 </html>

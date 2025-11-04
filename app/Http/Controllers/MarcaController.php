@@ -6,81 +6,81 @@ use App\Models\Marca;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
-
 class MarcaController extends Controller
 {
-   public function index()
+    // 🔹 Mostrar todas las marcas
+    public function index()
     {
         $marcas = Marca::all();
         return view('marcas.index', compact('marcas'));
     }
 
+    // 🔹 Formulario para crear
     public function create()
     {
         return view('marcas.create');
     }
 
+    // 🔹 Guardar nueva marca
     public function store(Request $request)
     {
-         $request->validate([
-        'nombre' => 'required',
-        'pais_origen' => 'required',
-        'logo' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
-    ]);
+        $validated = $request->validate([
+            'nombre' => 'required|string|max:255',
+            'pais_origen' => 'required|string|max:255',
+            'logo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
 
-    $logoPath = null;
-    if ($request->hasFile('logo')) {
-        $logoPath = $request->file('logo')->store('logos', 'public');
+        // Guardar logo si existe
+        if ($request->hasFile('logo')) {
+            $validated['logo'] = $request->file('logo')->store('logos', 'public');
+        }
+
+        Marca::create($validated);
+
+        return redirect()->route('marcas.index')->with('success', 'Marca creada correctamente.');
     }
 
-    Marca::create([
-        'nombre' => $request->nombre,
-        'pais_origen' => $request->pais_origen,
-        'logo' => $logoPath,
-    ]);
-
-    return redirect()->route('marcas.index')->with('success', 'Marca creada correctamente.');
-    }
-
+    // 🔹 Formulario para editar
     public function edit(Marca $marca)
     {
         return view('marcas.edit', compact('marca'));
     }
 
+    // 🔹 Actualizar marca existente
     public function update(Request $request, Marca $marca)
-{
-    $request->validate([
-        'nombre' => 'required|string|max:255',
-        'pais_origen' => 'required|string|max:255',
-        'logo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-    ]);
+    {
+        $validated = $request->validate([
+            'nombre' => 'required|string|max:255',
+            'pais_origen' => 'required|string|max:255',
+            'logo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
 
-    // Datos básicos
-    $marca->nombre = $request->nombre;
-    $marca->pais_origen = $request->pais_origen;
+        // Si subieron un nuevo logo
+        if ($request->hasFile('logo')) {
+            // Eliminar el logo anterior si existe
+            if ($marca->logo && Storage::disk('public')->exists($marca->logo)) {
+                Storage::disk('public')->delete($marca->logo);
+            }
 
-    // Si subieron un nuevo logo
-    if ($request->hasFile('logo') && $request->file('logo')->isValid()) {
-        // Borra el logo viejo si existe
+            // Guardar el nuevo logo
+            $validated['logo'] = $request->file('logo')->store('logos', 'public');
+        }
+
+        $marca->update($validated);
+
+        return redirect()->route('marcas.index')->with('success', 'Marca actualizada correctamente.');
+    }
+
+    // 🔹 Eliminar marca
+    public function destroy(Marca $marca)
+    {
+        // Borrar logo del storage si existe
         if ($marca->logo && Storage::disk('public')->exists($marca->logo)) {
             Storage::disk('public')->delete($marca->logo);
         }
 
-        // Guarda el nuevo logo en storage/app/public/logos
-        $path = $request->file('logo')->store('logos', 'public');
-        $marca->logo = $path;
-    }
-
-    $marca->save();
-
-    return redirect()->route('marcas.index')->with('success', 'Marca actualizada correctamente.');
-}
-
-    public function destroy(Marca $marca)
-    {
         $marca->delete();
-        return redirect()->route('marcas.index')->with('success', 'Marca eliminada');
-    }
 
-    
+        return redirect()->route('marcas.index')->with('success', 'Marca eliminada correctamente.');
+    }
 }
