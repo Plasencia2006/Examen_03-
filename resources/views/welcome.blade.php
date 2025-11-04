@@ -273,5 +273,10 @@
         @if (Route::has('login'))
             <div class="h-14.5 hidden lg:block"></div>
         @endif
+
+
+           <h1>Bienvenido a mi app Laravel 🚀</h1>
+    <p>Haz clic en el botón para ir a la página de Héctor</p>
+    <a href="{{ url('/hector') }}">Ir a la página de Héctor</a>
     </body>
 </html>

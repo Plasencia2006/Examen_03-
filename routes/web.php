@@ -7,3 +7,6 @@ Route::get('/', function () {
 });
 
 
+Route::get('/hector', function () {
+    return view('hector', ['nombre' => 'Héctor Isai Plasencia Alva']);
+});
