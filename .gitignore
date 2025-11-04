@@ -22,3 +22,8 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+# Permitir carpetas públicas necesarias
+!/public/css/
+!/public/js/
+!/public/build/
+!/public/index.php
