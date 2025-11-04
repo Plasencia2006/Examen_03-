@@ -3,9 +3,8 @@ import laravel from 'laravel-vite-plugin';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-    base: '', // 👈 fuerza rutas relativas (evita 404 en Railway)
     build: {
-        outDir: 'public/build', // 👈 asegura que el build se guarde en /public/build
+        outDir: 'public/build',
         manifest: true,
         emptyOutDir: true,
     },
